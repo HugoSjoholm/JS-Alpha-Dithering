@@ -187,16 +187,9 @@ async function hmm(wait, imageAA) {
           let qErr = GetErr(currentPixel, newPixel);
           let qErrNew = qErr[0];
 
-         /* 
-          tmpCol = GetPixel(x, y    , myImageData);
-
-          SetPixel(x,y,
-            [
-              clampCol(tmpCol[0] + (qErr[0] * (7 / 16))), //r
-              clampCol(tmpCol[1] + (qErr[1] * (7 / 16))), //g
-              clampCol(tmpCol[2] + (qErr[2] * (7 / 16))), //b
-              clampCol(tmpCol[3] + (qErr[3] * (7 / 16))) //a
-           ]);
+          
+          /*
+          SetPixel(x,y,qErr);
           tmpCol = GetPixel(x, y    , myImageData);
 
           if (x < 50) {
@@ -209,10 +202,22 @@ async function hmm(wait, imageAA) {
           updateAllChannels('1', avragedCol, x    , y + 1);
           updateAllChannels('1', avragedCol, x + 4, y + 1);
           */
+          tmpCol = GetPixel(x,y, myImageData);
+
+          SetPixel(x,y,
+            [
+              clampCol(tmpCol[0] + qErr[0] * (7 / 16)), //r
+              clampCol(tmpCol[1] + qErr[1] * (7 / 16)), //g
+              clampCol(tmpCol[2] + qErr[2] * (7 / 16)), //b
+              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
+           ]);
           
-          SetPixel(x,y, currentPixel);
-          
-          
+          tmpCol = GetPixel(x,y, myImageData);
+          if (x < 70 && y < 120) {
+            console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
+          }
+
+          /*
           //""copied"" from C#
           tmpCol = GetPixel(x + 1, y    , myImageData);
           SetPixel(x + 1, y    ,[
@@ -251,7 +256,7 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[3] + qErr[3] * (1 / 16))
           ]);
           
-          
+          */
           myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
           
   /*
