@@ -66,7 +66,7 @@ function GetErr(oldP, newP) {
   let tmp = [];
 
   for (let i = 0; i < oldP.length; i++) {
-    tmp.push(clampCol(oldP[i] - newP[i]));
+    tmp.push(oldP[i] - newP[i]);
   }
 
   return tmp;
@@ -176,11 +176,11 @@ async function hmm(wait, imageAA) {
             255 * Math.round(myImageData.data[currentPixelPos]/255),
             255 * Math.round(myImageData.data[currentPixelPos + 1]/255),
             255 * Math.round(myImageData.data[currentPixelPos + 2]/255),
-            0
+            255 * Math.round(myImageData.data[currentPixelPos + 3]/255),
             
           ];
 
-
+          SetPixel(x,y,newPixel);
 
           //let qErr = currentPixel.filter(x => !newPixel.includes(x));
 
@@ -202,6 +202,8 @@ async function hmm(wait, imageAA) {
           updateAllChannels('1', avragedCol, x    , y + 1);
           updateAllChannels('1', avragedCol, x + 4, y + 1);
           */
+
+          /*
           tmpCol = GetPixel(x,y, myImageData);
 
           SetPixel(x,y,
@@ -216,8 +218,9 @@ async function hmm(wait, imageAA) {
           if (x < 70 && y < 120) {
             console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
           }
+          */
 
-          /*
+          
           //""copied"" from C#
           tmpCol = GetPixel(x + 1, y    , myImageData);
           SetPixel(x + 1, y    ,[
@@ -226,11 +229,13 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[2] + qErr[2] * (7 / 16)), //b
              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
           ]); 
-          tmpCol = GetPixel(x + 1, y    , myImageData);
-
-          if (x < 50) {
-           console.log("x: "+ x + " y:" + y +"- " + tmpCol); 
+          
+          
+          tmpCol = GetPixel(x + 1,y, myImageData);
+          if (x < 70 && y < 120) {
+            console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
           }
+
 
           tmpCol = GetPixel(x - 1, y + 1, myImageData);
           SetPixel(x - 1, y + 1,[
@@ -256,7 +261,7 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[3] + qErr[3] * (1 / 16))
           ]);
           
-          */
+          
           myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
           
   /*
