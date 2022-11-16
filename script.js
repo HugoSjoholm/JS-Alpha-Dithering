@@ -230,12 +230,12 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
           ]); 
           
-          
+  /*        
           tmpCol = GetPixel(x + 1,y, myImageData);
           if (x < 70 && y < 120) {
             console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
           }
-
+*/
 
           tmpCol = GetPixel(x - 1, y + 1, myImageData);
           SetPixel(x - 1, y + 1,[
