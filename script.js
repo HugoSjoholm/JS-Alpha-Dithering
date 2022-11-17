@@ -1,6 +1,153 @@
 //super viktigt
 //https://www.construct.net/en/forum/construct-2/how-do-i-18/solved-imagedata-139293
 
+
+let myImageData;
+
+
+
+async function hmm(wait, imageAA) {
+  let imageData;
+  convertURIToImageData(imageAA).then(function(tmp) {
+    imageData = tmp;
+  });
+
+
+  let newWait = wait / 440000 + 5;
+  
+
+  console.log(newWait);
+  await new Promise(r => setTimeout(r, newWait ));
+
+  const canvasRen = document.getElementById("canvas-rendered");
+  const ctx = canvasRen.getContext("2d");
+
+
+  myImageData = ctx.createImageData(imageData);
+  myImageData =  imageData;
+
+  //const myImageDataCopy = myImageData;
+
+  
+  console.log('----------------');
+  console.log(myImageData);
+  
+  //console.log(myImageDataCopy);
+  var start = Date.now();
+  let tmpCol;
+  let currentPixelPos;
+  let currentPixel;
+  let qErr;
+
+  for (let y = 0; y < myImageData.height - 1; y++ ) {
+
+      for (let x = 0; x < myImageData.width - 1; x++) {
+
+        tmpCol = GetPixel(x + 1,y, myImageData);
+          if (x < 70 && y < 120) {
+            console.log("x: " + x + " y: " + y + " - CurrentPixel: " + currentPixel + " - myImageData: " + [
+            myImageData.data[(y) * (myImageData.width * 4) + (x) * 4],
+            myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 1],
+            myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 2],
+            myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 3]])
+          } 
+
+
+        /*
+          currentPixelPos = y * (myImageData.width * 4) + x * 4;
+          
+          currentPixel = GetPixel(x,y,myImageDataCopy);
+
+          const avragedCol = AvrageColor([
+            myImageData.data[currentPixelPos],
+            myImageData.data[currentPixelPos + 1],
+            myImageData.data[currentPixelPos + 2]
+          ]);
+
+          let newPixel = [
+            255 * Math.round(currentPixel[0]/255),
+            255 * Math.round(currentPixel[1]/255),
+            255 * Math.round(currentPixel[2]/255),
+            255 * Math.round(currentPixel[3]/255),
+          ];
+
+          //SetPixel(x,y,newPixel);
+
+          qErr = GetErr(currentPixel, newPixel);
+          
+          if(currentPixel[3] < 255) {
+
+          
+          //the algorithem
+
+          //""copied"" from C#
+          tmpCol = GetPixel(x + 1, y    , myImageData);
+          SetPixel(x + 1, y    ,[
+             tmpCol[0], //r
+             tmpCol[1], //g
+             tmpCol[2], //b
+             clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
+          ]); 
+          
+          tmpCol = GetPixel(x + 1,y, myImageData);
+          if (x < 70 && y < 120) {
+            console.log("x: " + x + " y: " + y + " - CurrentPixel: " + currentPixel + " - myImageData: " + [myImageDataCopy[currentPixelPos],
+            myImageDataCopy.data[currentPixelPos + 1],
+            myImageDataCopy.data[currentPixelPos + 2],
+            myImageDataCopy.data[currentPixelPos + 3]])
+          } 
+
+          tmpCol = GetPixel(x - 1, y + 1, myImageData);
+          SetPixel(x - 1, y + 1,[
+             tmpCol[0],
+             tmpCol[1],
+             tmpCol[2],
+             clampCol(tmpCol[3] + qErr[3] * (3 / 16))
+          ]);
+
+          tmpCol = GetPixel(x    , y + 1,myImageData);
+          SetPixel(x    , y + 1,[
+             tmpCol[0],
+             tmpCol[1],
+             tmpCol[2],
+             clampCol(tmpCol[3] + qErr[3] * (5 / 16))
+          ]);
+
+          tmpCol = GetPixel(x + 1, y + 1,myImageData);
+          SetPixel(x + 1, y + 1,[
+             tmpCol[0],
+             tmpCol[1],
+             tmpCol[2],
+             clampCol(tmpCol[3] + qErr[3] * (1 / 16))
+          ]);
+        }
+        else {
+          tmpCol = GetPixel(x,y,myImageData);
+          SetPixel(x,y,[
+            tmpCol[0],
+            tmpCol[1],
+            tmpCol[2],
+            255
+          ]);
+        }
+          //myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
+          */
+      }
+  }
+
+  console.log(myImageData);
+  canvasRen.width = myImageData.width;
+  canvasRen.height = myImageData.height;
+  ctx.putImageData(myImageData, 0, 0);
+
+  var end = Date.now();
+  console.log(`Execution time: ${end - start} ms`);
+
+}
+
+
+
+
 function clampCol(value) {
   if (value < 0) {
     value = 0;
@@ -11,14 +158,9 @@ function clampCol(value) {
   return value;
 }
 
-function AvrageColor(arr) {
-let num = 0;
-for (let i = 0; i < arr.length; i++) {
-  num += arr[i];
-}
-num /= arr.length;
 
-return clampCol(num);
+function AvrageColor(arr) {
+  return clampCol((arr[0] + arr[1] + [2])/3);
 }
 
 
@@ -78,214 +220,6 @@ function SetPixel(x, y, colors) {
   myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 2] = colors[2];
   myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 3] = colors[4];
 }
-
-function updateAllChannels(mode, colors, x, y) {
-  switch (mode) {
-    case '1':
-      myImageData.data[(y    ) * (myImageData.width * 4) + (x + 4) * 4 + 0] = colors;
-      myImageData.data[(y + 4) * (myImageData.width * 4) + (x - 4) * 4 + 1] = colors;
-      myImageData.data[(y + 4) * (myImageData.width * 4) + (x    ) * 4 + 2] = colors;
-
-      break;
-    case '3':
-      myImageData.data[(y    ) * (myImageData.width * 4) + (x + 4) * 4 + 0] = colors[0];
-      myImageData.data[(y + 4) * (myImageData.width * 4) + (x - 4) * 4 + 1] = colors[1];
-      myImageData.data[(y + 4) * (myImageData.width * 4) + (x    ) * 4 + 2] = colors[2];
-      break;
-    case '4':
-      myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 0] = colors[0];
-      myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 1] = colors[1];
-      myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 2] = colors[2];
-      myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 2] = colors[4];
-      break;
-    case 'alpha':
-      myImageData.data[(y    ) * (myImageData.width * 4) + (x + 4) * 4 + 3] = colors;
-      break;
-    case '0':
-      myImageData.data[(y ) * (myImageData.width * 4) + (x ) * 4 + 0] = colors;
-      myImageData.data[(y ) * (myImageData.width * 4) + (x ) * 4 + 1] = colors;
-      myImageData.data[(y ) * (myImageData.width * 4) + (x ) * 4 + 2] = colors;
-
-    break;
-      default:
-      console.log('no operation mode givven in updateAllChannels Fucntion');
-      break;
-  }
-}
-
-let myImageData;
-
-
-
-async function hmm(wait, imageAA) {
-  let tmp;
-  convertURIToImageData(imageAA).then(function(imageData) {
-    tmp = imageData;
-  });
-
-
-
-  
-  await new Promise(r => setTimeout(r, wait/3000));
-
-
-  const canvasRen = document.getElementById("canvas-rendered");
-  const ctx = canvasRen.getContext("2d");
-
-
-  //const myImageData = ctx.createImageData(1080, 1080);
-  myImageData = ctx.createImageData(tmp);
-  myImageData =  tmp;
-  //let tmp = base64ToBuffer(imageAA);
-
-  console.log('----------------');
-  console.log(myImageData);
-  console.log(tmp)  
-
-  var start = Date.now();
-
-  let red;
-  let blue;
-  let green;
-  let alpha;
-  let tmpCol;
-  let currentPixelPos;
-  let currentPixel;
-  let qErr;
-
-  console.log(myImageData);
-  for (let y = 0; y < myImageData.height - 1; y++ ) {
-
-      for (let x = 0; x < myImageData.width - 1; x++) {
-
-
-          currentPixelPos = y * (myImageData.width * 4) + x * 4;
-          currentPixel = [
-            myImageData.data[currentPixelPos],
-            myImageData.data[currentPixelPos + 1],
-            myImageData.data[currentPixelPos + 2],
-            myImageData.data[currentPixelPos + 3],
-          ];
-
-          const avragedCol = AvrageColor([
-            myImageData.data[currentPixelPos],
-            myImageData.data[currentPixelPos + 1],
-            myImageData.data[currentPixelPos + 2]
-          ]);
-          let newPixel = [
-            255 * Math.round(myImageData.data[currentPixelPos]/255),
-            255 * Math.round(myImageData.data[currentPixelPos + 1]/255),
-            255 * Math.round(myImageData.data[currentPixelPos + 2]/255),
-            255 * Math.round(myImageData.data[currentPixelPos + 3]/255),
-            
-          ];
-
-          SetPixel(x,y,newPixel);
-
-          //let qErr = currentPixel.filter(x => !newPixel.includes(x));
-
-          let qErr = GetErr(currentPixel, newPixel);
-          let qErrNew = qErr[0];
-
-          
-          /*
-          SetPixel(x,y,qErr);
-          tmpCol = GetPixel(x, y    , myImageData);
-
-          if (x < 50) {
-           console.log("x: "+ x + " y:" + y +"- " + tmpCol); 
-          }
-          */
-  /*
-          updateAllChannels('1', avragedCol, x + 4, y    );
-          updateAllChannels('1', avragedCol, x - 4, y + 1);
-          updateAllChannels('1', avragedCol, x    , y + 1);
-          updateAllChannels('1', avragedCol, x + 4, y + 1);
-          */
-
-          /*
-          tmpCol = GetPixel(x,y, myImageData);
-
-          SetPixel(x,y,
-            [
-              clampCol(tmpCol[0] + qErr[0] * (7 / 16)), //r
-              clampCol(tmpCol[1] + qErr[1] * (7 / 16)), //g
-              clampCol(tmpCol[2] + qErr[2] * (7 / 16)), //b
-              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
-           ]);
-          
-          tmpCol = GetPixel(x,y, myImageData);
-          if (x < 70 && y < 120) {
-            console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
-          }
-          */
-
-          
-          //""copied"" from C#
-          tmpCol = GetPixel(x + 1, y    , myImageData);
-          SetPixel(x + 1, y    ,[
-             clampCol(tmpCol[0] + qErr[0] * (7 / 16)), //r
-             clampCol(tmpCol[1] + qErr[1] * (7 / 16)), //g
-             clampCol(tmpCol[2] + qErr[2] * (7 / 16)), //b
-             clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
-          ]); 
-          
-  /*        
-          tmpCol = GetPixel(x + 1,y, myImageData);
-          if (x < 70 && y < 120) {
-            console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
-          }
-*/
-
-          tmpCol = GetPixel(x - 1, y + 1, myImageData);
-          SetPixel(x - 1, y + 1,[
-             clampCol(tmpCol[0] + qErr[0] * (3 / 16)),
-             clampCol(tmpCol[1] + qErr[1] * (3 / 16)),
-             clampCol(tmpCol[2] + qErr[2] * (3 / 16)),
-             clampCol(tmpCol[3] + qErr[3] * (3 / 16))
-          ]);
-
-          tmpCol = GetPixel(x    , y + 1,myImageData);
-          SetPixel(x    , y + 1,[
-             clampCol(tmpCol[0] + qErr[0] * (5 / 16)),
-             clampCol(tmpCol[1] + qErr[1] * (5 / 16)),
-             clampCol(tmpCol[2] + qErr[2] * (5 / 16)),
-             clampCol(tmpCol[3] + qErr[3] * (5 / 16))
-          ]);
-
-          tmpCol = GetPixel(x + 1, y + 1,myImageData);
-          SetPixel(x + 1, y + 1,[
-             clampCol(tmpCol[0] + qErr[0] * (1 / 16)),
-             clampCol(tmpCol[1] + qErr[1] * (1 / 16)),
-             clampCol(tmpCol[2] + qErr[2] * (1 / 16)),
-             clampCol(tmpCol[3] + qErr[3] * (1 / 16))
-          ]);
-          
-          
-          myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
-          
-  /*
-          myImageData.data[(y    ) * (myImageData.width * 4) + (x + 4) * 4] += qErrNew * (7/16);
-          myImageData.data[(y + 4) * (myImageData.width * 4) + (x - 4) * 4] += qErrNew * (3/16);
-          myImageData.data[(y + 4) * (myImageData.width * 4) + (x    ) * 4] += qErrNew * (5/16);
-          myImageData.data[(y + 4) * (myImageData.width * 4) + (x + 4) * 4] += qErrNew * (1/16);
-          */
-      }
-  }
-
-  console.log(myImageData);
-  canvasRen.width = myImageData.width;
-  canvasRen.height = myImageData.height;
-  ctx.putImageData(myImageData, 0, 0);
-
-  var end = Date.now();
-  console.log(`Execution time: ${end - start} ms`);
-
-}
-
-
-
-
 
 
 
