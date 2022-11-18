@@ -22,14 +22,11 @@ async function hmm(wait, imageAA) {
   const ctx = canvasRen.getContext("2d");
 
 
-  //const myImageData = ctx.createImageData(1080, 1080);
   myImageData = ctx.createImageData(tmp);
   myImageData =  tmp;
-  //let tmp = base64ToBuffer(imageAA);
 
   console.log('----------------');
   console.log(myImageData);
-  console.log(tmp)  
 
   var start = Date.now();
 
@@ -38,13 +35,12 @@ async function hmm(wait, imageAA) {
   let currentPixelPos;
   let currentPixel;
 
-  console.log(myImageData);
   for (let y = 0; y < myImageData.height - 1; y++ ) {
 
       for (let x = 0; x < myImageData.width - 1; x++) {
 
 
-          currentPixelPos = y * (myImageData.width * 4) + x * 4;
+          currentPixelPos = y * (myImageData.width * 4) + x * 4; //current position for the current pixel in the image data array
           currentPixel = [
             myImageData.data[currentPixelPos],
             myImageData.data[currentPixelPos + 1],
@@ -52,12 +48,8 @@ async function hmm(wait, imageAA) {
             myImageData.data[currentPixelPos + 3],
           ];
 
-          const avragedCol = AvrageColor([
-            myImageData.data[currentPixelPos],
-            myImageData.data[currentPixelPos + 1],
-            myImageData.data[currentPixelPos + 2]
-          ]);
-          let newPixel = [
+          //new pixel is the pixel colors quantized/"limited colors"/"crushed colors"
+          let newPixel = [ 
             255 * Math.round(myImageData.data[currentPixelPos]/255),
             255 * Math.round(myImageData.data[currentPixelPos + 1]/255),
             255 * Math.round(myImageData.data[currentPixelPos + 2]/255),
@@ -65,8 +57,8 @@ async function hmm(wait, imageAA) {
             
           ];
 
-          SetPixel(x,y,newPixel);
-
+          //saves the quantized pixel to the canvas and then gets the Quantized error/differance between the original pixel and the quantized pixel
+          SetPixel(x,y,newPixel); 
           let qErr = GetErr(currentPixel, newPixel);
           
           
@@ -79,12 +71,12 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
           ]); 
           
-          /*
-          tmpCol = GetPixel(x + 1,y, myImageData);
+          //tmp logging of the qErr and the color after the first step in the algoritem
+          /*tmpCol = GetPixel(x + 1,y, myImageData);
           if (x < 70 && y < 120) {
             console.log("x: " + x + " y: " + y + " - Color: " + tmpCol + " - qErr: " + qErr)
-          }
-          */
+          }*/
+          
 
           tmpCol = GetPixel(x - 1, y + 1, myImageData);
           SetPixel(x - 1, y + 1,[
@@ -110,7 +102,7 @@ async function hmm(wait, imageAA) {
              clampCol(tmpCol[3] + qErr[3] * (1 / 16))
           ]);
           
-          
+          //quick fix for alpha always bein 0??? this just hard codes all the alpha to being 255
           myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
           
       }
