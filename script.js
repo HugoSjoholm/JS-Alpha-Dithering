@@ -13,7 +13,7 @@ async function hmm(wait, imageAA) {
   });
 
 
-  let newWait = wait / 440000 + 5;
+  let newWait = wait / 440000 + 10;
   
 
   console.log(newWait);
@@ -26,12 +26,15 @@ async function hmm(wait, imageAA) {
   myImageData = ctx.createImageData(imageData);
   myImageData =  imageData;
 
-  //const myImageDataCopy = myImageData;
-
+  let myImageDataCopy = ctx.createImageData(imageData);
+  myImageDataCopy = imageData;
   
   console.log('----------------');
   console.log(myImageData);
   
+  await new Promise(r => setTimeout(r, 15000));
+
+
   //console.log(myImageDataCopy);
   var start = Date.now();
   let tmpCol;
@@ -43,6 +46,10 @@ async function hmm(wait, imageAA) {
 
       for (let x = 0; x < myImageData.width - 1; x++) {
 
+        /*
+        currentPixel = GetPixel(x,y,myImageDataCopy);
+
+
         tmpCol = GetPixel(x + 1,y, myImageData);
           if (x < 70 && y < 120) {
             console.log("x: " + x + " y: " + y + " - CurrentPixel: " + currentPixel + " - myImageData: " + [
@@ -51,12 +58,14 @@ async function hmm(wait, imageAA) {
             myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 2],
             myImageData.data[(y) * (myImageData.width * 4) + (x) * 4 + 3]])
           } 
+*/
 
-
-        /*
+        
           currentPixelPos = y * (myImageData.width * 4) + x * 4;
           
           currentPixel = GetPixel(x,y,myImageDataCopy);
+          if (x < 70 && y < 120)
+            console.log(currentPixel);
 
           const avragedCol = AvrageColor([
             myImageData.data[currentPixelPos],
@@ -75,54 +84,60 @@ async function hmm(wait, imageAA) {
 
           qErr = GetErr(currentPixel, newPixel);
           
+
           if(currentPixel[3] < 255) {
 
-          
-          //the algorithem
+            //the algorithem
 
-          //""copied"" from C#
-          tmpCol = GetPixel(x + 1, y    , myImageData);
-          SetPixel(x + 1, y    ,[
-             tmpCol[0], //r
-             tmpCol[1], //g
-             tmpCol[2], //b
-             clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
-          ]); 
-          
-          tmpCol = GetPixel(x + 1,y, myImageData);
-          if (x < 70 && y < 120) {
-            console.log("x: " + x + " y: " + y + " - CurrentPixel: " + currentPixel + " - myImageData: " + [myImageDataCopy[currentPixelPos],
-            myImageDataCopy.data[currentPixelPos + 1],
-            myImageDataCopy.data[currentPixelPos + 2],
-            myImageDataCopy.data[currentPixelPos + 3]])
-          } 
+            //""copied"" from C#
+            tmpCol = GetPixel(x + 1, y    , myImageDataCopy);
+            SetPixel(x + 1, y    ,[
+              tmpCol[0], //r
+              tmpCol[1], //g
+              tmpCol[2], //b
+              clampCol(tmpCol[3] + qErr[3] * (7 / 16)) //a
+            ]); 
+            
+            tmpCol = GetPixel(x + 1,y, myImageDataCopy);
+            if (x < 70 && y < 120) {
+              console.log("x: " + x + " y: " + y + " - CurrentPixel: " + currentPixel + " - myImageData: " + [
+              myImageDataCopy.data[currentPixelPos],
+              myImageDataCopy.data[currentPixelPos + 1],
+              myImageDataCopy.data[currentPixelPos + 2],
+              myImageDataCopy.data[currentPixelPos + 3]])
+            } 
 
-          tmpCol = GetPixel(x - 1, y + 1, myImageData);
-          SetPixel(x - 1, y + 1,[
-             tmpCol[0],
-             tmpCol[1],
-             tmpCol[2],
-             clampCol(tmpCol[3] + qErr[3] * (3 / 16))
-          ]);
+            tmpCol = GetPixel(x - 1, y + 1, myImageDataCopy);
+            SetPixel(x - 1, y + 1,[
+              tmpCol[0],
+              tmpCol[1],
+              tmpCol[2],
+              clampCol(tmpCol[3] + qErr[3] * (3 / 16))
+            ]);
 
-          tmpCol = GetPixel(x    , y + 1,myImageData);
-          SetPixel(x    , y + 1,[
-             tmpCol[0],
-             tmpCol[1],
-             tmpCol[2],
-             clampCol(tmpCol[3] + qErr[3] * (5 / 16))
-          ]);
+            tmpCol = GetPixel(x    , y + 1,myImageDataCopy);
+            SetPixel(x    , y + 1,[
+              tmpCol[0],
+              tmpCol[1],
+              tmpCol[2],
+              clampCol(tmpCol[3] + qErr[3] * (5 / 16))
+            ]);
 
-          tmpCol = GetPixel(x + 1, y + 1,myImageData);
-          SetPixel(x + 1, y + 1,[
-             tmpCol[0],
-             tmpCol[1],
-             tmpCol[2],
-             clampCol(tmpCol[3] + qErr[3] * (1 / 16))
-          ]);
+            tmpCol = GetPixel(x + 1, y + 1,myImageDataCopy);
+            SetPixel(x + 1, y + 1,[
+              tmpCol[0],
+              tmpCol[1],
+              tmpCol[2],
+              clampCol(tmpCol[3] + qErr[3] * (1 / 16))
+            ]);
         }
         else {
-          tmpCol = GetPixel(x,y,myImageData);
+
+            console.log('????');
+          
+
+
+          tmpCol = GetPixel(x,y,myImageDataCopy);
           SetPixel(x,y,[
             tmpCol[0],
             tmpCol[1],
@@ -131,11 +146,11 @@ async function hmm(wait, imageAA) {
           ]);
         }
           //myImageData.data[(y) * (myImageData.width * 4) + (x ) * 4 + 3] = 255;
-          */
+          
       }
   }
 
-  console.log(myImageData);
+  console.log(myImageDataCopy);
   canvasRen.width = myImageData.width;
   canvasRen.height = myImageData.height;
   ctx.putImageData(myImageData, 0, 0);
